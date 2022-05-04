@@ -63,6 +63,9 @@ spec:
               mountPath: /afsdata
             - name: temp
               mountPath: /export
+            - name: config
+              mountPath: /usr/local/tomcat/conf/logging.properties
+              subPath: logging.properties
       {{- end }}
       containers:
         - name: {{ .Chart.Name }}
