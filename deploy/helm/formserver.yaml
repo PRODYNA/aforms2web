@@ -28,3 +28,6 @@ storage:
     size: 1Gi
     accessModes:
       - ReadWriteOnce
+
+imagePullSecrets:
+  - name: "aforms2webcr"
