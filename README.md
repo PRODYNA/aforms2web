@@ -29,6 +29,7 @@ This project
 * Database resources can be configured via Helm
 * Postgres JDBC driver included in image, other can be added easily
 * The context /formservef can be renamed to anything else
+* Logging can be configured
 
 ## TODO
 
