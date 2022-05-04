@@ -6,4 +6,4 @@ metadata:
     {{- include "formserver.labels" . | nindent 4 }}
 data:
   resources: {{ toYaml .Values.tomcat.resources | indent 2 }}
-  logging.properties: {{ toYaml | indent 2 }}
+  logging.properties: {{ toYaml .Values.tomcat.resources | indent 2 }}

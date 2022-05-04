@@ -1,6 +1,6 @@
 apiVersion: v2
 name: formserver
-description: A Helm chart for Kubernetes
+description: aforms2web Formserver
 
 # A chart can be either an 'application' or a 'library' chart.
 #
