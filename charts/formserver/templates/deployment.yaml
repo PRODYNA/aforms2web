@@ -63,9 +63,6 @@ spec:
               mountPath: /afsdata
             - name: temp
               mountPath: /export
-            - name: config
-              mountPath: /usr/local/tomcat/conf/logging.properties
-              subPath: logging.properties
       {{- end }}
       containers:
         - name: {{ .Chart.Name }}
@@ -76,8 +73,11 @@ spec:
           volumeMounts:
             - mountPath: /usr/local/tomcat/webapps/formserver/afs
               name: afsdata
-            - mountPath: /config
-              name: config
+            - name: config
+              mountPath: /config
+            - name: config
+              mountPath: /usr/local/tomcat/conf/logging.properties
+              subPath: logging.properties
           env:
             - name: ENVIRONMENT
               value: "{{ .Values.environment.this }}"
