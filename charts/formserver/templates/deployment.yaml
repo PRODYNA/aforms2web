@@ -1,0 +1,150 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "formserver.fullname" . }}
+  labels:
+    {{- include "formserver.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  strategy:
+    type: {{ .Values.strategy.type }}
+  selector:
+    matchLabels:
+      {{- include "formserver.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "formserver.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "formserver.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      initContainers:
+      {{- if .Values.preload.docker.enabled }}
+        - name: preload-docker
+          image: "{{ .Values.preload.docker.image.repository }}:{{ .Values.preload.docker.image.tag }}"
+          imagePullPolicy: {{ .Values.preload.docker.imagePullPolicy }}
+          command:
+            - /bin/sh
+            - -c
+            - cp -rv /preload/* /afsdata
+          volumeMounts:
+            - name: afsdata
+              mountPath: /afsdata
+      {{- end }}
+      {{- if .Values.preload.git.enabled }}
+        - name: preload-git
+          image: bitnami/git
+          env:
+            - name: GIT_SYNC_REPO
+              value: {{ .Values.preload.git.repository }}
+            - name: GIT_SYNC_REV
+              value: {{ .Values.preload.git.tag }}
+            - name: GIT_SYNC_PATH
+              value: {{ .Values.preload.git.path }}
+            - name: GIT_SYNC_ROOT
+              value: /afsdata
+          command:
+            - /bin/sh
+            - -c
+            - cd /export && git clone --depth 1 --branch $GIT_SYNC_REV $GIT_SYNC_REPO && cd * && rm -rf .git && cd ./$GIT_SYNC_PATH && cp -rv * /afsdata && cd / && rm -rf /export/*
+          volumeMounts:
+            - name: afsdata
+              mountPath: /afsdata
+            - name: temp
+              mountPath: /export
+      {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          volumeMounts:
+            - mountPath: /usr/local/tomcat/webapps/formserver/afs
+              name: afsdata
+            - mountPath: /config
+              name: config
+          env:
+            - name: ENVIRONMENT
+              value: "{{ .Values.environment.this }}"
+            - name: ENVIRONMENT_DEFINITIONS
+              value: "{{ .Values.environment.definitions }}"
+            - name: JAVA_MEMORY_MIN
+              value: {{ .Values.tomcat.java.memory.min }}
+            - name: JAVA_MEMORY_MAX
+              value: {{ .Values.tomcat.java.memory.max }}
+            - name: DATABASE_TYPE
+              value: "{{ .Values.database.type }}"
+            - name: DATABASE_HOST
+              value: "{{ .Values.database.hostname }}"
+            - name: DATABASE_NAME
+              value: "{{ .Values.database.name }}"
+            - name: DATABASE_PORT
+              value: "{{ .Values.database.port }}"
+            - name: DATABASE_USERNAME
+              value: "{{ .Values.database.username }}"
+            - name: DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.database.existingSecret.name }}
+                  key: {{ .Values.database.existingSecret.key}}
+            - name: CATALINA_OPTS
+              value: "-Djava.locale.providers=COMPAT,CLDR -Dafs.environment=${ENVIRONMENT} -Dafs.environment.definitions=${ENVIRONMENT_DEFINITIONS} -Dfile.encoding=UTF-8 -Xms${JAVA_MEMORY_MIN} -Xmx${JAVA_MEMORY_MAX} -Ddatabase.type=${DATABASE_TYPE} -Ddatabase.host=${DATABASE_HOST} -Ddatabase.port=${DATABASE_PORT} -Ddatabase.username=${DATABASE_USERNAME} -Ddatabase.name=${DATABASE_NAME} -Ddatabase.password=${DATABASE_PASSWORD}"
+            - name: CONTEXT_RENAME_ENABLED
+              value: "{{ .Values.tomcat.context.rename.enabled }}"
+            - name: CONTEXT_RENAME_TO
+              value: "{{ .Values.tomcat.context.rename.to }}"
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          startupProbe:
+            httpGet:
+              path: /health
+              port: http
+              scheme: HTTP
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 20
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      volumes:
+        - name: afsdata
+          persistentVolumeClaim:
+            claimName: {{ include "formserver.fullname" . }}-afsdata
+        - name: config
+          configMap:
+            name: {{ include "formserver.fullname" . }}
+        - name: temp
+          emptyDir: {}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

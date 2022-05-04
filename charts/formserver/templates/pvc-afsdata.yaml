@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "formserver.fullname" . }}-afsdata
+  labels:
+    {{- include "formserver.labels" . | nindent 4 }}
+spec:
+  accessModes:
+    {{- toYaml .Values.storage.afsdata.accessModes | nindent 4}}
+  resources:
+    requests:
+      storage: {{ .Values.storage.afsdata.size }}
+  {{- if .Values.storage.afsdata.className }}
+  storageClassName: {{ .Values.storage.afsdata.className }}
+  {{- end}}

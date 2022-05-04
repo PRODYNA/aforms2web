@@ -1,0 +1,148 @@
+# Default values for formserver.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: aforms2webcr.azurecr.io/formserver
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: 2021.526-1
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: chart-example.local
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  targetMemoryUtilizationPercentage: 80
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+environment:
+  definitions: "DEV,default"
+  this: "DEV"
+
+database:
+  type: "postgres"
+  hostname: ""
+  port: ""
+  username: ""
+  name: ""
+  existingSecret:
+    name: "secret"
+    key: "secretKey"
+
+storage:
+  afsdata:
+    size: 10Gi
+    accessModes:
+      - ReadWriteOnce
+    className: ""
+
+preload:
+  docker:
+    enabled: false
+    image:
+      repository: "dkrizic/formserver-preload"
+      tag: "latest"
+    override: false
+  git:
+    enabled: false
+    repository: "https://github.com/dkrizic/aform2web-afsdata"
+    branch: "main"
+    tag: "1.0.0"
+    path: "/"
+    override: false
+
+strategy:
+  type: Recreate
+
+tomcat:
+  context:
+    rename:
+      enabled: false
+      to: "bestellung"
+  java:
+    memory:
+      min: 500m
+      max: 1000m
+  resources: |+
+    <!-- Postgres configuration for statistik -->
+    <Resource name="jdbc/statistik" auth="Container"
+      type="javax.sql.DataSource"
+      driverClassName="org.postgresql.Driver"
+      url="jdbc:postgresql://${database.host}:${database.port}/${database.name}"
+      username="${database.username}"
+      password="${database.password}"
+      maxActive="100"
+      maxIdle="5"
+      maxWait="10000"
+      removeAbandoned="true"
+      removeAbandonedTimeout="300"
+      logAbandoned="true"
+      accessToUnderlyingConnectionAllowed="true"
+      validationQuery="select 1" />
+

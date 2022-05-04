@@ -1,0 +1,35 @@
+#!/bin/bash
+#tag=$(uuidgen | awk -F- '{print $1}' | tr '[:upper:]' '[:lower:]')
+me=$0
+env=$1
+if [ -z "$env" ]; then
+    echo "$me <environment<"
+    exit 1
+fi
+
+basedir="helm"
+envdir="$basedir/$env"
+if [ ! -d $envdir ]; then
+  echo "Missing environment directory $envdir"
+  exit 2
+fi
+
+context=$(kubectl config get-contexts | grep "^\*" | awk '{print $2}' )
+if [ $env != $context ]; then
+  echo "Environment $env does not match current context $context"
+  exit 1
+fi
+
+kubectl create namespace formserver 2>/dev/null
+
+# Bitnami server
+helm repo add bitnami https://charts.bitnami.com/bitnami
+helm repo update bitnami
+helm -n formserver upgrade --install postgres -f $basedir/postgres.yaml -f $envdir/postgres.yaml bitnami/postgresql
+
+# aforms2web server
+helm repo add aforms2web https://prodyna.github.io/aforms2web/
+helm repo update aforms2web
+helm -n formserver upgrade --install formserver -f $basedir/formserver.yaml -f $envdir/formserver.yaml aforms2web/formserver
+
+kubectl -n formserver rollout restart deployment formserver

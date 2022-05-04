@@ -1,0 +1,54 @@
+ingress:
+  enabled: true
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-http
+    external-dns: "true"
+    external-dns.alpha.kubernetes.io/access: public
+    external-dns.alpha.kubernetes.io/cloudflare-proxied: "false"
+    external-dns.alpha.kubernetes.io/target: 130.180.93.142
+    nginx.ingress.kubernetes.io/affinity: "cookie"
+    nginx.ingress.kubernetes.io/session-cookie-name: "INGRESSCOOKIE"
+    nginx.ingress.kubernetes.io/session-cookie-expires: "172800"
+    nginx.ingress.kubernetes.io/session-cookie-max-age: "172800"
+    nginx.ingress.kubernetes.io/session-cookie-change-on-failure: "true"
+  hosts:
+    - host: formserver.krizic.net
+      paths:
+        - path: /bestellung
+          pathType: ImplementationSpecific
+  tls:
+  - secretName: formserver-tls
+    hosts:
+      - formserver.krizic.net
+
+autoscaling:
+  enabled: true
+  minReplicas: 1
+  maxReplicas: 10
+
+nodeSelector:
+  region: extranet
+
+storage:
+  afsdata:
+    size: 10Gi
+    accessModes:
+      - ReadWriteMany
+    className: managed-nfs
+
+strategy:
+  type: RollingUpdate
+
+resources:
+  requests:
+    cpu: 1000m
+    memory: 1200Mi
+  limits:
+    cpu: 2000m
+    memory: 1500Mi
+
+tomcat:
+  context:
+    rename:
+      enabled: true
+      to: "bestellung"

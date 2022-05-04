@@ -1,0 +1,30 @@
+database:
+  type: postgres
+  hostname: "postgres-postgresql"
+  port: "5432"
+  username: "formserver"
+  name: "formserver"
+  existingSecret:
+    name: "postgres-postgresql"
+    key: "password"
+
+image:
+  pullPolicy: Always
+
+preload:
+  docker:
+    enabled: false
+    image:
+      tag: "1.0.0"
+  git:
+    enabled: true
+    repository: "https://github.com/dkrizic/aforms2web-afsdata"
+    tag: "1.0.0"
+    path: "/"
+    override: false
+
+storage:
+  afsdata:
+    size: 1Gi
+    accessModes:
+      - ReadWriteOnce

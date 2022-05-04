@@ -1,0 +1,8 @@
+ingress:
+  enabled: true
+  hosts:
+    - host: formserver.minikube
+      paths:
+        - path: /formserver
+          pathType: ImplementationSpecific
+  tls: []
