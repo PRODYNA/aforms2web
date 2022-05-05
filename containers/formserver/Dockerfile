@@ -24,6 +24,6 @@ RUN curl -v --fail https://jdbc.postgresql.org/download/postgresql-${POSTGRES_DR
 
 # Unpack formserver.war
 WORKDIR /usr/local/tomcat/webapps
-RUN curl -v --fail ${FORMSERVER_WAR_URL} --output formserver.war
+RUN curl -v --fail $FORMSERVER_WAR_URL --output formserver.war
 RUN unzip formserver.war -d formserver; rm formserver.war
 CMD ["/entrypoint.sh"]
