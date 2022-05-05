@@ -3,6 +3,16 @@ entries:
   formserver:
   - apiVersion: v2
     appVersion: "2021.526"
+    created: "2022-05-05T09:51:48.150528366Z"
+    description: aforms2web Formserver
+    digest: 927da8b62e563f57621b7bf1f7c0f3e60d5817e6885d668764c28846d4dc281a
+    name: formserver
+    type: application
+    urls:
+    - https://github.com/PRODYNA/aforms2web/releases/download/formserver-1.0.3/formserver-1.0.3.tgz
+    version: 1.0.3
+  - apiVersion: v2
+    appVersion: "2021.526"
     created: "2022-05-04T22:12:07.509978292Z"
     description: A Helm chart for Kubernetes
     digest: 1ee8f924ea05e275e9e2aeb8525ba8beb61863187ef101100da7c9f7f9ff827a
@@ -31,4 +41,4 @@ entries:
     urls:
     - https://github.com/PRODYNA/aforms2web/releases/download/formserver-1.0.0/formserver-1.0.0.tgz
     version: 1.0.0
-generated: "2022-05-04T22:12:07.509999476Z"
+generated: "2022-05-05T09:51:48.150543766Z"
