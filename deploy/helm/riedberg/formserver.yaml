@@ -52,3 +52,7 @@ tomcat:
     rename:
       enabled: true
       to: "bestellung"
+
+monitoring:
+  serviceMonitor:
+    enabled: true
