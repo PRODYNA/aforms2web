@@ -13,10 +13,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Download binaries
-        working-directory: containers/formserver/overlay/usr/local/tomcat/webapps
-        run: |
-          curl -v --fail "${{ secrets.FORMSERVER_WAR_SAS_TOKEN }}" -o formserver.war
+#      - name: Download binaries
+#        working-directory: containers/formserver/overlay/usr/local/tomcat/webapps
+#        run: |
+#          curl -v --fail "${{ secrets.FORMSERVER_WAR_SAS_TOKEN }}" -o formserver.war
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
@@ -55,3 +55,5 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           file: ./containers/formserver/Dockerfile
           context: ./containers/formserver
+          build-args: |
+            FORMSERVER_WAR_URL=${{ secrets.FORMSERVER_WAR_SAS_TOKEN }}
