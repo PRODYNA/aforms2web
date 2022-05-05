@@ -135,6 +135,8 @@ tomcat:
       type="javax.sql.DataSource"
       driverClassName="org.postgresql.Driver"
       url="jdbc:postgresql://${database.host}:${database.port}/${database.name}"
+      factory="org.apache.tomcat.jdbc.pool.DataSourceFactory"
+      jdbcInterceptors="nl.nlighten.prometheus.tomcat.TomcatJdbcInterceptor(logFailed=true,logSlow=true,threshold=1000,buckets=.01|.05|.1|1|10,slowQueryBuckets=1|10|30)"
       username="${database.username}"
       password="${database.password}"
       maxActive="100"
