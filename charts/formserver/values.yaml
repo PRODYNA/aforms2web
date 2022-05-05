@@ -95,6 +95,10 @@ database:
     name: "secret"
     key: "secretKey"
 
+monitoring:
+  serviceMonitor:
+    enabled: false
+
 storage:
   afsdata:
     size: 10Gi
