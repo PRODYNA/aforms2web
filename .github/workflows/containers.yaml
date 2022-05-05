@@ -16,7 +16,7 @@ jobs:
       - name: Download binaries
         working-directory: containers/formserver/overlay/usr/local/tomcat/webapps
         run: |
-          curl "${{ secrets.FORMSERVER_WAR_SAS_TOKEN }}" -o formserver.war
+          curl -v --fail "${{ secrets.FORMSERVER_WAR_SAS_TOKEN }}" -o formserver.war
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
