@@ -55,4 +55,4 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           file: ./containers/formserver/Dockerfile
           context: ./containers/formserver
-          build-args: FORMSERVER_WAR_URL=${{ secrets.FORMSERVER_WAR_SAS_TOKEN }}
+          build-args: FORMSERVER_WAR_URL="${{ secrets.FORMSERVER_WAR_SAS_TOKEN }}"

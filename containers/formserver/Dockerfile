@@ -21,7 +21,6 @@ RUN curl -v --fail --location https://search.maven.org/remotecontent?filepath=io
 # download postgres driver
 RUN curl -v --fail https://jdbc.postgresql.org/download/postgresql-${POSTGRES_DRIVER_VERSION}.jar -o /usr/local/tomcat/lib/postgresql-${POSTGRES_DRIVER_VERSION}.jar
 
-
 # Unpack formserver.war
 WORKDIR /usr/local/tomcat/webapps
 RUN curl -v --fail ${FORMSERVER_WAR_URL} --output formserver.war
