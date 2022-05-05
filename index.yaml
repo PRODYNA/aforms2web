@@ -3,6 +3,16 @@ entries:
   formserver:
   - apiVersion: v2
     appVersion: "2021.526"
+    created: "2022-05-05T11:35:33.230570762Z"
+    description: aforms2web Formserver
+    digest: 4dd1d19e7581864c1b05c0844ac3eba7982cbd254e7cce189c2e17f4e7b910cd
+    name: formserver
+    type: application
+    urls:
+    - https://github.com/PRODYNA/aforms2web/releases/download/formserver-1.0.4/formserver-1.0.4.tgz
+    version: 1.0.4
+  - apiVersion: v2
+    appVersion: "2021.526"
     created: "2022-05-05T09:51:48.150528366Z"
     description: aforms2web Formserver
     digest: 927da8b62e563f57621b7bf1f7c0f3e60d5817e6885d668764c28846d4dc281a
@@ -41,4 +51,4 @@ entries:
     urls:
     - https://github.com/PRODYNA/aforms2web/releases/download/formserver-1.0.0/formserver-1.0.0.tgz
     version: 1.0.0
-generated: "2022-05-05T09:51:48.150543766Z"
+generated: "2022-05-05T11:35:33.230599163Z"
