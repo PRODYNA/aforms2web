@@ -1,3 +1,5 @@
+ARG FORMSERVER_WAR_URL
+
 FROM tomcat:9.0.62-jdk11
 ENV POSTGRES_DRIVER_VERSION=42.3.5
 ENV TOMCAT_SIMPLECLIENT_VERSION=0.12.0
@@ -21,5 +23,6 @@ RUN curl -v --fail https://jdbc.postgresql.org/download/postgresql-${POSTGRES_DR
 
 # Unpack formserver.war
 WORKDIR /usr/local/tomcat/webapps
+# RUN curl -v --fail ${FORMSERVER_WAR_URL} --output formserver.war
 RUN unzip formserver.war -d formserver; rm formserver.war
 CMD ["/entrypoint.sh"]
